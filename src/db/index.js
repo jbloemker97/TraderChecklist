@@ -1,7 +1,7 @@
 const mongodb = require('mongodb');
 const { mongoURI } = require('../../config/dev');
 
-async function makeDb (dbName, mongoUri) {
+async function makeDb (dbName) {
     const MongoClient = mongodb.MongoClient;
     const client = new MongoClient(mongoURI, { useNewUrlParser: true });
 
