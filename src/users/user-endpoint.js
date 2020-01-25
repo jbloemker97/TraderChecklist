@@ -9,13 +9,28 @@ async function handleUserRequest (httpRequest) {
             return await user.getUser({ email: httpRequest.body.email });
 
         case 'POST':
-            return await user.addUser({ email: httpRequest.body.email, password: httpRequest.body.password, name: httpRequest.body.name, bio: httpRequest.body.bio, subscription: httpRequest.body.subscription, isAdmin: httpRequest.body.isAdmin });
+            const requestType = determineRequest(httpRequest);
+
+            // Determine if request is to login or register
+            if (requestType === 'REGISTER') {
+                return await user.addUser({ email: httpRequest.body.email, password: httpRequest.body.password, confirmPassword: httpRequest.body.confirmPassword, name: httpRequest.body.name, bio: httpRequest.body.bio, subscription: httpRequest.body.subscription, isAdmin: httpRequest.body.isAdmin });
+            }else if (requestType === 'LOGIN') {
+                return await user.login({ email: httpRequest.body.email, password: httpRequest.body.password });
+            }
+            break;
 
         case 'PUT':
             return true;
 
         default:
             return httpResponse({ statusCode: 404, data: 'Route not found' });
+    }
+}
+
+function determineRequest (httpRequest) {
+    switch (httpRequest.method) {
+        case 'POST':
+            return (httpRequest.body.password && httpRequest.body.confirmPassword) ? 'REGISTER' : 'LOGIN';
     }
 }
 
