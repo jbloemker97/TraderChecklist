@@ -1,15 +1,15 @@
 const httpResponse = require('../helpers/http-response');
 const makeDb = require('../db/');
-const db = makeDb();
-const user = require('./user-service')({ db });
+const database = makeDb();
+const user = require('./user-service')({ database });
 
-function handleUserRequest (httpRequest) {
+async function handleUserRequest (httpRequest) {
     switch (httpRequest.method) {
         case 'GET':
-            return user.getUser({ email: httpRequest.body.email });
+            return await user.getUser({ email: httpRequest.body.email });
 
         case 'POST':
-            return user.addUser({ email, password, name, bio, subscription, isAdmin });
+            return await user.addUser({ email: httpRequest.body.email, password: httpRequest.body.password, name: httpRequest.body.name, bio: httpRequest.body.bio, subscription: httpRequest.body.subscription, isAdmin: httpRequest.body.isAdmin });
 
         case 'PUT':
             return true;

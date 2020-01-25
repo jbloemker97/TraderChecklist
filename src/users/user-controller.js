@@ -2,7 +2,7 @@ const adaptRequest = require('../helpers/adapt-request');
 const httpResponse = require('../helpers/http-response');
 const handleUserRequest = require('./user-endpoint');
 
-function userController (req, res) {
+async function userController (req, res) {
     const httpRequest = adaptRequest(req);
 
     try {
@@ -15,8 +15,8 @@ function userController (req, res) {
 
         // Send response
         res
-        .statusCode(response.statusCode)
-        .send(response.data);
+        .status(response.statusCode)
+        .send(response);
 
     }catch (error) {
         return httpResponse({ statusCode: 404, data: error.message });
