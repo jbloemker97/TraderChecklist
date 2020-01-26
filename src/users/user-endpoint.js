@@ -20,7 +20,7 @@ async function handleUserRequest (httpRequest) {
             break;
 
         case 'PUT':
-            return true;
+            return await user.updateUser({ email: httpRequest.body.email, password: httpRequest.body.password, confirmPassword: httpRequest.body.confirmPassword, name: httpRequest.body.name, bio: httpRequest.body.bio, subscription: httpRequest.body.subscription, isAdmin: httpRequest.body.isAdmin, isBestSeller: httpRequest.body.isBestSeller, strategiesOwned: httpRequest.body.strategiesOwned, strategiesPublished: httpRequest.body.strategiesPublished });
 
         default:
             return httpResponse({ statusCode: 404, data: 'Route not found' });

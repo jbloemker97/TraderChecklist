@@ -8,7 +8,8 @@ function userService ({ database }) {
     return Object.freeze({
         getUser,
         addUser,
-        login
+        login,
+        updateUser
     });
 
     async function getUser ({ email }) {
@@ -50,6 +51,34 @@ function userService ({ database }) {
         };
 
         return httpResponse({ statusCode: 200, data: query, headers });
+    }
+
+    async function updateUser ({ email, password, name, bio, subscription, isAdmin, isBestSeller, strategiesOwned, strategiesPublished }) {
+        const db = await database;
+        const user = await makeUser({ email, password, name, bio, subscription, isAdmin, isBestSeller, strategiesOwned, strategiesPublished });
+
+        // Create user object to update mongodb with
+        let updateUser = {};
+        if (user.email) updateUser.email = user.email;
+        if (user.password) updateUser.password = user.password;
+        if (user.name) updateUser.name = user.name;
+        if (user.bio) updateUser.bio = user.bio;
+        if (user.subscription) updateUser.subscription = user.subscription;
+        if (user.isAdmin) updateUser.isAdmin = user.isAdmin;
+        if (user.isBestSeller) updateUser.isBestSeller = user.isBestSeller;
+        if (user.strategiesOwned) updateUser.strategiesOwned = user.strategiesOwned;
+        if (user.strategiesPublished) updateUser.strategiesPublished = user.strategiesPublished;
+
+        try {
+            const query = await db
+                .collection('users')
+                .updateOne({ email }, { $set: updateUser})
+
+            return httpResponse({ statusCode: 200, data: updateUser });
+
+        }catch (error) {
+            return httpResponse({ statusCode: 400, data: error.message });
+        }
     }
 
     async function addUser ({ email, password, confirmPassword, name, bio, subscription, isAdmin }) {

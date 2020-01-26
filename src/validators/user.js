@@ -3,8 +3,8 @@ const Joi = require('joi');
 function validateUser ({ email, password, name, bio, subscription, isAdmin, isBestSeller, strategiesOwned, strategiesPublished }) {
     const schema = Joi.object().keys({
         email: Joi.string().email().required(), 
-        password: Joi.string().required(), 
-        name: Joi.string().required(), 
+        password: Joi.string().allow(null).default(null), 
+        name: Joi.string().allow(null).default(null), 
         bio: Joi.string().allow(null).default(null), 
         subscription: Joi.string().allow(null).default(null), 
         isAdmin: Joi.boolean().default(false), 
@@ -14,7 +14,7 @@ function validateUser ({ email, password, name, bio, subscription, isAdmin, isBe
     }); 
 
     const { error } = Joi.validate({ email, password, name, bio, subscription, isAdmin, isBestSeller, strategiesOwned, strategiesPublished }, schema);
-    if (error) throw Error('Invalid User');
+    if (error) throw Error(error.message);
 
     return {
         email, 
