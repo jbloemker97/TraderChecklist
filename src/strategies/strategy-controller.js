@@ -19,6 +19,7 @@ async function strategyController (req, res) {
         .send(response);
 
     }catch (error) {
+        console.log(error);
         return httpResponse({ statusCode: 404, data: error.message });
     }
 }
