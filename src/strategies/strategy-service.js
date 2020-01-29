@@ -6,7 +6,8 @@ const ObjectID = require('mongodb').ObjectID;
 function strategyService ({ database }) {
     return Object.freeze({
         addStrategy,
-        getStrategies
+        getStrategies,
+        updateStrategy
     });
 
     async function getStrategies ({ filter, orderby }) {
@@ -53,6 +54,34 @@ function strategyService ({ database }) {
                 .insertOne(strategy)
 
             return httpResponse({ statusCode: 200, data: strategy });
+        }catch (error) {
+            return httpResponse({ statusCode: 404, data: error.message });
+        }
+    }
+
+    async function updateStrategy ({ id, name, description, categories, tradeFrequency, price }) {
+        const db = await database;
+        const strategy = makeStrategy({ name, description, author: null, categories, tradeFrequency, price });
+        const mongoQuery = { _id: ObjectID(id) };
+        const updateData = {};
+
+        if (strategy.name) updateData.name = strategy.name;
+        if (strategy.description) updateData.description = strategy.description;
+        if (strategy.categories) updateData.categories = strategy.categories;
+        if (strategy.tradeFrequency) updateData.tradeFrequency = strategy.tradeFrequency;
+        if (strategy.price) updateData.price = strategy.price;
+
+        try {
+            const update = await db
+                .collection('strategy')
+                .updateOne(mongoQuery, { $set: updateData })
+
+            const [ query ] = await db 
+                .collection('strategy')
+                .find(mongoQuery)
+                .toArray();
+
+            return httpResponse({ statusCode: 200, data: query });
         }catch (error) {
             return httpResponse({ statusCode: 404, data: error.message });
         }
