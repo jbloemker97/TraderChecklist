@@ -1,8 +1,7 @@
 const Joi = require('joi');
 
-function validateTrade ({ _strategyId, type, entry, exit, profitable }) {
+function validateTrade ({ type, entry, exit, profitable }) {
     const schema = Joi.object().keys({
-        _strategyId: Joi.string().required(),
         type: Joi.string().allow(null).default(null),
         entry: Joi.object().keys({
             date: Joi.string().allow(null).default(null),
@@ -16,11 +15,10 @@ function validateTrade ({ _strategyId, type, entry, exit, profitable }) {
         profitable: Joi.bool().default(false),
     }); 
 
-    const { error } = Joi.validate({ _strategyId, type, entry, exit, profitable }, schema);
+    const { error } = Joi.validate({ type, entry, exit, profitable }, schema);
     if (error) throw Error(error.message);
 
     return {
-        _strategyId,
         type, 
         entry, 
         exit,
