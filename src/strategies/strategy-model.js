@@ -6,9 +6,9 @@ function makeStrategy ({ validator }) {
         categories,
         tradeFrequency,
         price,
-        performance
+        profitable
     }) => {
-        const strategy = validator({ name, description, author, categories, tradeFrequency, price, performance });
+        const strategy = validator({ name, description, author, categories, tradeFrequency, price, profitable });
         if (!strategy) throw Error('Strategy is not valid');
 
         return strategy;

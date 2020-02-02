@@ -1,5 +1,5 @@
-const validator = require('../validators/strategy');
-const makeStrategy = require('./strategy-model')({ validator });
+const strategyValidator = require('../validators/strategy');
+const makeStrategy = require('./strategy-model')({ validator: strategyValidator });
 const httpResponse = require('../helpers/http-response');
 const ObjectID = require('mongodb').ObjectID;
 
@@ -82,6 +82,68 @@ function strategyService ({ database }) {
                 .toArray();
 
             return httpResponse({ statusCode: 200, data: query });
+        }catch (error) {
+            return httpResponse({ statusCode: 404, data: error.message });
+        }
+    }
+
+    async function addTrade ({ strategyId, type, entry, exit, profitable }) {
+        const db = await database;
+        const id = ObjectID();
+        const trade = makeTrade({ id, type, entry, exit, profitable });
+        const mongoQuery = { _id: ObjectID(strategyId) };
+
+        try {
+            const query = await db
+                .collection('strategy')
+                .updateOne(mongoQuery, {
+                    $push: {
+                        trades: trade
+                    } 
+                })
+
+            return httpResponse({ statusCode: 200, data: trade });
+
+        }catch (error) {
+            return httpResponse({ statusCode: 404, data: error.message });
+        }
+    }
+
+    async function updateTrade ({ strategyId, tradeId, type, entry, exit, profitable }) {
+        const db = await database;
+        const trade = makeTrade({ id: tradeId, type, entry, exit, profitable });
+        const updateQuery = {};
+        const mongoQuery = {
+            _id: ObjectID(strategyId),
+            'trades._id': ObjectID(tradeId)  
+        };
+
+        if (trade.type) updateQuery.type = trade.type;
+        if (trade.entry && trade.entry.date) updateQuery.entry.date = trade.entry.date;
+        if (trade.entry && trade.entry.price) updateQuery.entry.price = trade.entry.price;
+        if (trade.entry && trade.entry.contract) updateQuery.entry.contract = trade.entry.contract;
+        if (trade.exit && trade.exit.date) updateQuery.exit.date = trade.exit.date;
+        if (trade.exit && trade.exit.price) updateQuery.exit.price = trade.exit.price;
+        if (trade.exit && trade.profitable) updateQuery.profitable = trade.profitable;
+        if (trade.profitable) updateQuery.profitable = trade.profitable;
+
+        console.log(updateQuery);
+        
+        try {
+            // const update = await db
+            //     .collection('strategy')
+            //     .updateOne(mongoQuery, { $set: { trades: updateQuery } });
+
+            const [ query ] = await db
+                .collection('strategy')
+                .find(mongoQuery)
+                .toArray() 
+
+            console.log(query)
+
+            return httpResponse({ statusCode: 200, data: 'success' });
+
+
         }catch (error) {
             return httpResponse({ statusCode: 404, data: error.message });
         }

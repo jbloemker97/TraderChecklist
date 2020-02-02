@@ -1,12 +1,12 @@
 const adaptRequest = require('../helpers/adapt-request');
 const httpResponse = require('../helpers/http-response');
-const handleStrategyRequest = require('./strategy-endpoint');
+const handleTradeRequest = require('./trade-endpoint');
 
-async function strategyController (req, res) {
+async function tradeController (req, res) {
     const httpRequest = adaptRequest(req);
 
     try {
-        const response = await handleStrategyRequest(httpRequest);
+        const response = await handleTradeRequest(httpRequest);
 
         // Set Headers
         if (response.headers) {
@@ -24,4 +24,4 @@ async function strategyController (req, res) {
     }
 }
 
-module.exports = strategyController;
+module.exports = tradeController;
