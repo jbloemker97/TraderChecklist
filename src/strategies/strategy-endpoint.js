@@ -16,6 +16,9 @@ async function handleStrategyRequest (httpRequest) {
         case 'PUT':
             return await strategy.updateStrategy({ id: httpRequest.body.id, name: httpRequest.body.name, description: httpRequest.body.description, author: httpRequest.body.author, categories: httpRequest.body.categories, tradeFrequency: httpRequest.body.tradeFrequency, price: httpRequest.body.price });
            
+        case 'DELETE':
+            return await strategy.deleteStrategy({ _strategyId: httpRequest.body._strategyId });
+
         default:
             return httpResponse({ statusCode: 404, data: 'Route not found' });
     }

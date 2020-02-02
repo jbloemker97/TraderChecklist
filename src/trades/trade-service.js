@@ -7,7 +7,8 @@ function strategyService ({ database }) {
     return Object.freeze({
         addTrade,
         updateTrade,
-        getTrades
+        getTrades,
+        deleteTrade
     });
 
     async function getTrades ({ _tradeId, _strategyId, }) {
@@ -70,6 +71,21 @@ function strategyService ({ database }) {
                 .toArray()
 
             return httpResponse({ statusCode: 200, data: lookup });
+        }catch (error) {
+            return httpResponse({ statusCode: 404, data: error.message });
+        }
+    }
+
+    async function deleteTrade ({ _tradeId }) {
+        const db = await database; 
+        const mongoQuery = { _id: ObjectID(_tradeId) };
+
+        try {
+            const query = await db
+                .collection('trades')
+                .remove(mongoQuery)
+
+            return httpResponse({ statusCode: 200, data: 'deleted' });
         }catch (error) {
             return httpResponse({ statusCode: 404, data: error.message });
         }

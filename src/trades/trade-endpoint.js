@@ -16,6 +16,8 @@ async function handleTradeRequest (httpRequest) {
         case 'PUT':
             return await trade.updateTrade({ _tradeId: httpRequest.body._tradeId, type: httpRequest.body.type, entry: httpRequest.body.entry, exit: httpRequest.body.exit, profitable: httpRequest.body.profitable });
             
+        case 'DELETE':
+            return await trade.deleteTrade({ _tradeId: httpRequest.body._tradeId });
 
         default:
             return httpResponse({ statusCode: 404, data: 'Route not found' });

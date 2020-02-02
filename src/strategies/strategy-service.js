@@ -7,7 +7,8 @@ function strategyService ({ database }) {
     return Object.freeze({
         addStrategy,
         getStrategies,
-        updateStrategy
+        updateStrategy,
+        deleteStrategy
     });
 
     async function getStrategies ({ filter, orderby }) {
@@ -87,63 +88,16 @@ function strategyService ({ database }) {
         }
     }
 
-    async function addTrade ({ strategyId, type, entry, exit, profitable }) {
-        const db = await database;
-        const id = ObjectID();
-        const trade = makeTrade({ id, type, entry, exit, profitable });
-        const mongoQuery = { _id: ObjectID(strategyId) };
+    async function deleteStrategy ({ _strategyId }) {
+        const db = await database; 
+        const mongoQuery = { _id: ObjectID(_strategyId) };
 
         try {
             const query = await db
                 .collection('strategy')
-                .updateOne(mongoQuery, {
-                    $push: {
-                        trades: trade
-                    } 
-                })
+                .remove(mongoQuery)
 
-            return httpResponse({ statusCode: 200, data: trade });
-
-        }catch (error) {
-            return httpResponse({ statusCode: 404, data: error.message });
-        }
-    }
-
-    async function updateTrade ({ strategyId, tradeId, type, entry, exit, profitable }) {
-        const db = await database;
-        const trade = makeTrade({ id: tradeId, type, entry, exit, profitable });
-        const updateQuery = {};
-        const mongoQuery = {
-            _id: ObjectID(strategyId),
-            'trades._id': ObjectID(tradeId)  
-        };
-
-        if (trade.type) updateQuery.type = trade.type;
-        if (trade.entry && trade.entry.date) updateQuery.entry.date = trade.entry.date;
-        if (trade.entry && trade.entry.price) updateQuery.entry.price = trade.entry.price;
-        if (trade.entry && trade.entry.contract) updateQuery.entry.contract = trade.entry.contract;
-        if (trade.exit && trade.exit.date) updateQuery.exit.date = trade.exit.date;
-        if (trade.exit && trade.exit.price) updateQuery.exit.price = trade.exit.price;
-        if (trade.exit && trade.profitable) updateQuery.profitable = trade.profitable;
-        if (trade.profitable) updateQuery.profitable = trade.profitable;
-
-        console.log(updateQuery);
-        
-        try {
-            // const update = await db
-            //     .collection('strategy')
-            //     .updateOne(mongoQuery, { $set: { trades: updateQuery } });
-
-            const [ query ] = await db
-                .collection('strategy')
-                .find(mongoQuery)
-                .toArray() 
-
-            console.log(query)
-
-            return httpResponse({ statusCode: 200, data: 'success' });
-
-
+            return httpResponse({ statusCode: 200, data: 'deleted' });
         }catch (error) {
             return httpResponse({ statusCode: 404, data: error.message });
         }
