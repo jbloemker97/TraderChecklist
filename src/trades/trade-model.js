@@ -12,7 +12,7 @@ function makeTrade ({ validator }) {
         if (!trade) throw Error('Trade is not valid');
 
         return {
-            _strategyId: ObjectID(_strategyId),
+            _strategyId: ObjectID(_strategyId) || null,
             date: new Date(Date.now()).toISOString(),
             ...trade
         }

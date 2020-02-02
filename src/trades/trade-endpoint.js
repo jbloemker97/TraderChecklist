@@ -14,7 +14,7 @@ async function handleTradeRequest (httpRequest) {
             return await trade.addTrade({ _strategyId: httpRequest.body._strategyId, type: httpRequest.body.type, entry: httpRequest.body.entry, exit: httpRequest.body.exit, profitable: httpRequest.body.profitable });
 
         case 'PUT':
-            return await trade.updateTrade({ strategyId: httpRequest.body.strategyId, tradeId: httpRequest.body.tradeId, type: httpRequest.body.type, entry: httpRequest.body.entry, exit: httpRequest.body.exit, profitable: httpRequest.body.profitable });
+            return await trade.updateTrade({ _tradeId: httpRequest.body._tradeId, type: httpRequest.body.type, entry: httpRequest.body.entry, exit: httpRequest.body.exit, profitable: httpRequest.body.profitable });
             
 
         default:

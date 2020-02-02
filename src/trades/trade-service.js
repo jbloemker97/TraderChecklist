@@ -49,8 +49,30 @@ function strategyService ({ database }) {
         }
     }
 
-    async function updateTrade ({ strategyId, tradeId, type, entry, exit, profitable }) {
-        
+    async function updateTrade ({ _tradeId, type, entry, exit, profitable }) {
+        const db = await database;
+        const trade = makeTrade({ _strategyId: null, type, entry, exit, profitable });
+        let updateQuery = {};
+        const mongoQuery = { _id: ObjectID(_tradeId) };
+
+        for (let field in trade) {
+            if (trade[field]) updateQuery[field] = trade[field];
+        }
+
+        try {
+            const query = await db
+                .collection('trades')
+                .updateOne(mongoQuery, { $set: updateQuery });
+
+            const [ lookup ] = await db
+                .collection('trades')
+                .find(mongoQuery)
+                .toArray()
+
+            return httpResponse({ statusCode: 200, data: lookup });
+        }catch (error) {
+            return httpResponse({ statusCode: 404, data: error.message });
+        }
     }
 }
 
